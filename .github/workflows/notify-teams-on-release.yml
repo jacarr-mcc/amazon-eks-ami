@@ -1,0 +1,40 @@
+name: Notify Teams on New Release
+
+on:
+  schedule:
+    - cron: "0 * * * *"  # Check every hour (adjust as needed)
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  notify-teams:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get latest release from the original repo
+        id: latest_release
+        run: |
+          ORIGINAL_REPO="https://api.github.com/repos/{owner}/{repo}/releases/latest"
+          response=$(curl -s $ORIGINAL_REPO)
+          echo "Latest release info: $response"
+          # Extract release name and URL
+          tag_name=$(echo "$response" | jq -r .tag_name)
+          release_url=$(echo "$response" | jq -r .html_url)
+          echo "tag_name=$tag_name" >> $GITHUB_ENV
+          echo "release_url=$release_url" >> $GITHUB_ENV
+
+      - name: Send release notification to Teams
+        run: |
+          # Prepare the payload for Teams message
+          webhook_url="HTTPS://CENTURYLINK.WEBHOOK.OFFICE.COM/WEBHOOKB2/6BFEE7B5-E177-4B96-B610-2DD357FCDD5B@72B17115-9915-42C0-9F1B-4F98E5A4BCD2/INCOMINGWEBHOOK/D20B5012E316446A8FC3670DBBC85BBC/200CB6A1-79BA-49DD-82A7-7367996B3AFE/V2YE7BLDGRYJW4APX8OPO5SJ3INMK0LMPR5JZRN41GJJK1"
+          payload=$(cat <<EOF
+          {
+            "title": "amazon-eks AMI has been released!",
+            "text": "A new release has been published: [${{ env.tag_name }}](${{ env.release_url }})"
+          }
+          EOF
+          )
+          
+          # Send the message
+          curl -X POST -H "Content-Type: application/json" --data "$payload" $webhook_url
