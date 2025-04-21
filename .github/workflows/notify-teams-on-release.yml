@@ -15,7 +15,7 @@ jobs:
       - name: Get latest release from the original repo
         id: latest_release
         run: |
-          ORIGINAL_REPO="https://api.github.com/repos/{owner}/{repo}/releases/latest"
+          ORIGINAL_REPO="https://github.com/awslabs/amazon-eks-ami/releases/latest"
           response=$(curl -s $ORIGINAL_REPO)
           echo "Latest release info: $response"
           # Extract release name and URL
