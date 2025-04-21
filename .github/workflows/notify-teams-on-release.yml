@@ -27,7 +27,7 @@ jobs:
       - name: Send release notification to Teams
         run: |
           # Prepare the payload for Teams message
-          webhook_url="HTTPS://CENTURYLINK.WEBHOOK.OFFICE.COM/WEBHOOKB2/6BFEE7B5-E177-4B96-B610-2DD357FCDD5B@72B17115-9915-42C0-9F1B-4F98E5A4BCD2/INCOMINGWEBHOOK/D20B5012E316446A8FC3670DBBC85BBC/200CB6A1-79BA-49DD-82A7-7367996B3AFE/V2YE7BLDGRYJW4APX8OPO5SJ3INMK0LMPR5JZRN41GJJK1"
+          webhook_url="${{ secrets.TEAMS_WEBHOOK_URL }}"
           payload=$(cat <<EOF
           {
             "title": "amazon-eks AMI has been released!",
